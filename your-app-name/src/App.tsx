@@ -16,6 +16,8 @@ const App: React.FC = () => {
     description: '',
   });
 
+  const [isPreview, setIsPreview] = useState(false);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
@@ -30,63 +32,85 @@ const App: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Here you can send formData to your backend or handle it as needed
-    console.log(formData);
+    setIsPreview(true);
+  };
+
+  const handleEdit = () => {
+    setIsPreview(false);
   };
 
   return (
     <Container maxWidth="sm">
-      <Typography variant="h3" gutterBottom> {/* Changed variant to h3 */}
-        Form
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          label="Name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          margin="normal"
-          required
-        />
-        <TextField
-          fullWidth
-          label="Email"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          margin="normal"
-          required
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          style={{ display: 'none' }}
-          id="photo-upload"
-        />
-        <label htmlFor="photo-upload">
-          <Button variant="contained" component="span">
-            Upload Photo
+      {!isPreview ? (
+        <form onSubmit={handleSubmit}>
+          <Typography variant="h4" gutterBottom>
+            Form
+          </Typography>
+          <TextField
+            fullWidth
+            label="Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            id="photo-upload"
+          />
+          <label htmlFor="photo-upload">
+            <Button variant="contained" component="span">
+              Upload Photo
+            </Button>
+          </label>
+          {formData.photo && <Typography>{formData.photo.name}</Typography>}
+          <TextField
+            fullWidth
+            label="Description"
+            name="description"
+            multiline
+            rows={4}
+            value={formData.description}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <Button type="submit" variant="contained" color="primary">
+            Submit
           </Button>
-        </label>
-        {formData.photo && <Typography>{formData.photo.name}</Typography>}
-        <TextField
-          fullWidth
-          label="Description"
-          name="description"
-          multiline
-          rows={4}
-          value={formData.description}
-          onChange={handleChange}
-          margin="normal"
-          required
-        />
-        <Button type="submit" variant="contained" color="primary">
-          Submit
-        </Button>
-      </form>
+        </form>
+      ) : (
+        <div>
+          <Typography variant="h4" gutterBottom>
+            Preview
+          </Typography>
+          {formData.photo && (
+            <div>
+              <img src={URL.createObjectURL(formData.photo)} alt="Preview" style={{ maxWidth: '100%', marginBottom: '16px' }} />
+            </div>
+          )}
+          <Typography variant="h6">{formData.name}</Typography>
+          <Typography variant="body1">{formData.email}</Typography>
+          <Typography variant="body1">{formData.description}</Typography>
+          <Button variant="contained" onClick={handleEdit} style={{ marginTop: '16px' }}>
+            Edit
+          </Button>
+        </div>
+      )}
     </Container>
   );
 };
